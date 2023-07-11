@@ -1,0 +1,66 @@
+los codigos de referencia son
+
+chatgpt:
+
+import cv2
+import mediapipe as mp
+
+# Configuración de MediaPipe
+mp_drawing = mp.solutions.drawing_utils
+mp_face_mesh = mp.solutions.face_mesh
+
+# Inicializar la webcam
+cap = cv2.VideoCapture(0)
+
+# Configurar el reconocimiento de la malla facial de MediaPipe
+with mp_face_mesh.FaceMesh(min_detection_confidence=0.5, min_tracking_confidence=0.5) as face_mesh:
+    while cap.isOpened():
+        # Leer los fotogramas de la webcam
+        success, frame = cap.read()
+        if not success:
+            break
+
+        # Convertir la imagen a RGB
+        image_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+
+        # Realizar la detección de la malla facial con MediaPipe
+        results = face_mesh.process(image_rgb)
+
+        # Dibujar los puntos clave y las conexiones en la imagen
+        mp_drawing.draw_landmarks(frame, results.multi_face_landmarks, mp_face_mesh.FACE_CONNECTIONS)
+
+        # Reconocer las vocales (a, e, i, o, u) basadas en la posición de la boca
+        if results.multi_face_landmarks:
+            landmarks = results.multi_face_landmarks[0].landmark
+            mouth_landmarks = [landmarks[mp_face_mesh.FaceLandmark.MOUTH_LEFT],
+                               landmarks[mp_face_mesh.FaceLandmark.MOUTH_RIGHT],
+                               landmarks[mp_face_mesh.FaceLandmark.MOUTH_UPPER_LIP],
+                               landmarks[mp_face_mesh.FaceLandmark.MOUTH_LOWER_LIP]]
+
+            # Calcular la relación entre los puntos clave para determinar la vocal
+            lip_distance = mouth_landmarks[2].y - mouth_landmarks[3].y
+
+            if lip_distance > 0.05:
+                cv2.putText(frame, 'Vocal: A', (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+            else:
+                cv2.putText(frame, 'Vocal: E, I, O, U', (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+
+        # Mostrar la imagen en una ventana
+        cv2.imshow('MediaPipe FaceMesh', frame)
+
+        # Salir si se presiona la tecla 'q'
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
+
+# Liberar la webcam y cerrar las ventanas
+cap.release()
+cv2.destroyAllWindows()
+
+
+ # Calcular la relación entre los puntos clave para determinar la vocal
+            lip_distance = mouth_landmarks[2].y - mouth_landmarks[3].y
+
+            if lip_distance > 0.05:
+                cv2.putText(frame, 'Vocal: A', (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+            else:
+                cv2.putText(frame, 'Vocal: E, I, O, U', (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
