@@ -29,16 +29,16 @@ while True:
     for x, y, w, h in estacionamientos:
         espacio = imgDil[y:y+h, x:x+w]
         count = cv2.countNonZero(espacio)
-        cv2.putText(img, str(count), (x,y+h-10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255,255,0), 1)
+        cv2.putText(img, str(count), (x,y+h-10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255,255,0), 1)#marcar los rectangulos azules
         cv2.rectangle(img, (x,y), (x+w, y+h), (255,0,0), 2)
         if count < 1000:
-            cv2.rectangle(img, (x,y), (x+w, y+h), (0,255,0), 2)
+            cv2.rectangle(img, (x,y), (x+w, y+h), (0,255,0), 2) #marcar rextangulos verdes de movimiento de casilla
             numero_de_fichas_movidas += 1
     cv2.imshow('video', img) #mostrar la imagen
     # cv2.imshow('video TH', imgTH)
     # cv2.imshow('video Median', imgMedian)
     # cv2.imshow('video Dilatada', imgDil)
-    cv2.waitKey(10)
+    cv2.waitKey(10) # tiempo de espera
     tiempo_actual = time.time()  # Tiempo actual
     tiempo_transcurrido = tiempo_actual - inicio  # tiempo transcurrido
     if tiempo_transcurrido >= duracion_deseada:
