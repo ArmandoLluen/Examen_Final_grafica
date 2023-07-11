@@ -64,3 +64,48 @@ cv2.destroyAllWindows()
                 cv2.putText(frame, 'Vocal: A', (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
             else:
                 cv2.putText(frame, 'Vocal: E, I, O, U', (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+
+
+
+  if results.multi_face_landmarks:
+            for face_landmarks in results.multi_face_landmarks:
+                # Obtener los índices de los puntos clave de los labios
+                upper_lip_indices = [61, 62, 63, 64, 65, 185, 92, 186]
+                lower_lip_indices = [39, 40, 41, 42, 43, 44, 78, 95]
+
+                # Dibujar los puntos clave de los labios
+                for index in upper_lip_indices + lower_lip_indices:
+                    landmark = face_landmarks.landmark[index]
+                    x = int(landmark.x * frame.shape[1])
+                    y = int(landmark.y * frame.shape[0])
+                    cv2.circle(frame, (x, y), 2, (0, 255, 0), -1)
+
+                # Dibujar las líneas que conectan los puntos clave de los labios
+                for i in range(len(upper_lip_indices) - 1):
+                    x1 = int(face_landmarks.landmark[upper_lip_indices[i]].x * frame.shape[1])
+                    y1 = int(face_landmarks.landmark[upper_lip_indices[i]].y * frame.shape[0])
+                    x2 = int(face_landmarks.landmark[upper_lip_indices[i + 1]].x * frame.shape[1])
+                    y2 = int(face_landmarks.landmark[upper_lip_indices[i + 1]].y * frame.shape[0])
+                    cv2.line(frame, (x1, y1), (x2, y2), (0, 255, 0), 1)
+
+                for i in range(len(lower_lip_indices) - 1):
+                    x1 = int(face_landmarks.landmark[lower_lip_indices[i]].x * frame.shape[1])
+                    y1 = int(face_landmarks.landmark[lower_lip_indices[i]].y * frame.shape[0])
+                    x2 = int(face_landmarks.landmark[lower_lip_indices[i + 1]].x * frame.shape[1])
+                    y2 = int(face_landmarks.landmark[lower_lip_indices[i + 1]].y * frame.shape[0])
+                    cv2.line(frame, (x1, y1), (x2, y2), (0, 255, 0), 1)
+
+                # Reconocer las vocales (a, e, i, o, u) basadas en la posición de los labios
+                upper_lip_distance = face_landmarks.landmark[61].y - face_landmarks.landmark[185].y
+                lower_lip_distance = face_landmarks.landmark[39].y - face_landmarks.landmark[44].y
+
+                if upper_lip_distance > 0.03 and lower_lip_distance > 0.03:
+                    cv2.putText(frame, 'Vocal: A', (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+                elif upper_lip_distance > -0.02 and lower_lip_distance > -0.02:
+                    cv2.putText(frame, 'Vocal: E', (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+                elif upper_lip_distance > -0.06 and lower_lip_distance > -0.06:
+                    cv2.putText(frame, 'Vocal: I', (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+                elif upper_lip_distance > -0.09 and lower_lip_distance > -0.09:
+                    cv2.putText(frame, 'Vocal: O', (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+                else:
+                    cv2.putText(frame, 'Vocal: U', (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
